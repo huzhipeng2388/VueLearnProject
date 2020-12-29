@@ -6,7 +6,7 @@
         <img src="../assets/logo.png" alt="" />
       </div>
       <!-- 登陆表单区域 -->
-      <el-form :model="loginForm" class="login_form" :rules="loginFormRules">
+      <el-form ref="loginFormRef" :model="loginForm" class="login_form" :rules="loginFormRules">
         <!-- 用户名 -->
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
@@ -17,8 +17,8 @@
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btns">
-          <el-button type="primary">登陆</el-button>
-          <el-button type="info">重置</el-button>
+          <el-button type="primary" @click="login">登陆</el-button>
+          <el-button type="info" @click="resetLoginForm" >重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -31,8 +31,8 @@ export default {
     return {
       // 这是登陆表单数据绑定对象
       loginForm: {
-        username: 'zs',
-        password: '1'
+        username: 'admin',
+        password: '123456'
       },
       // 表单验证规则对象
       loginFormRules: {
@@ -45,6 +45,23 @@ export default {
           { min: 6, max: 15, message: '长度在6到15个字符之间', trigger: 'blur' }
         ]
       }
+    }
+  },
+  methods: {
+    // 点击重置按钮，重置登陆表单
+    resetLoginForm () {
+      this.$refs.loginFormRef.resetFields()
+    },
+    login () {
+      this.$refs.loginFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('login', this.loginForm)
+        if (res.meta.status !== 200) return this.$message.error('登陆失败,' + res.meta.msg)
+        this.$message.success('登陆成功')
+        window.sessionStorage.setItem('token', res.data.token)
+        // 通过编程式导航跳转到后台主页
+        this.$router.push('/home')
+      })
     }
   }
 }
