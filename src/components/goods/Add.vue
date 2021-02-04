@@ -203,44 +203,8 @@ export default {
       if (this.addForm.goods_cat.length !== 3) {
         this.addForm.goods_cat = []
         this.manyTableData = []
-      } else {
-        const { data: res } = await this.$http.get(
-          `categories/${this.cateId}/attributes`,
-          {
-            params: { sel: 'many' }
-          }
-        )
-        if (res.meta.status !== 200) {
-          return this.$message.error('获取动态参数列表失败！')
-        }
-        res.data.forEach(item => {
-          item.attr_vals =
-            item.attr_vals.length === 0 ? [] : item.attr_vals.split(',')
-        })
-        this.manyTableData = res.data
-
-        const { data: res2 } = await this.$http.get(
-          `categories/${this.cateId}/attributes`,
-          {
-            params: { sel: 'only' }
-          }
-        )
-        if (res2.meta.status !== 200) {
-          return this.$message.error('获取静态属性列表失败！')
-        }
-        this.onlyTableData = res2.data
       }
-    },
-    // 标签页切换前触发事件
-    beforeTabLeave(activeName, oldActiveName) {
-      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
-        this.$message.error('请先选择商品分类！')
-        return false
-      }
-    },
-    async tabClicked() {
-      // 证明访问了动态参数面板
-      // if (this.activeIndex === '1') {
+      // } else {
       //   const { data: res } = await this.$http.get(
       //     `categories/${this.cateId}/attributes`,
       //     {
@@ -255,18 +219,55 @@ export default {
       //       item.attr_vals.length === 0 ? [] : item.attr_vals.split(',')
       //   })
       //   this.manyTableData = res.data
-      // } else if (this.activeIndex === '2') {
-      //   const { data: res } = await this.$http.get(
+
+      //   const { data: res2 } = await this.$http.get(
       //     `categories/${this.cateId}/attributes`,
       //     {
       //       params: { sel: 'only' }
       //     }
       //   )
-      //   if (res.meta.status !== 200) {
+      //   if (res2.meta.status !== 200) {
       //     return this.$message.error('获取静态属性列表失败！')
       //   }
-      //   this.onlyTableData = res.data
+      //   this.onlyTableData = res2.data
       // }
+    },
+    // 标签页切换前触发事件
+    beforeTabLeave(activeName, oldActiveName) {
+      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
+        this.$message.error('请先选择商品分类！')
+        return false
+      }
+    },
+    async tabClicked() {
+      // 证明访问了动态参数面板
+      if (this.activeIndex === '1') {
+        const { data: res } = await this.$http.get(
+          `categories/${this.cateId}/attributes`,
+          {
+            params: { sel: 'many' }
+          }
+        )
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取动态参数列表失败！')
+        }
+        res.data.forEach(item => {
+          item.attr_vals =
+            item.attr_vals.length === 0 ? [] : item.attr_vals.split(',')
+        })
+        this.manyTableData = res.data
+      } else if (this.activeIndex === '2') {
+        const { data: res } = await this.$http.get(
+          `categories/${this.cateId}/attributes`,
+          {
+            params: { sel: 'only' }
+          }
+        )
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取静态属性列表失败！')
+        }
+        this.onlyTableData = res.data
+      }
     },
     // 预览图片
     handlePreview(file) {
